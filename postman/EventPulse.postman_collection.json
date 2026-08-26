@@ -1,0 +1,286 @@
+{
+  "info": {
+    "name": "EventPulse",
+    "description": "Postman collection for EventPulse API - Event Management Platform. Covers Auth, Events, Registrations, Announcements, and Health.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:3000", "type": "string" },
+    { "key": "token", "value": "", "type": "string" },
+    { "key": "adminToken", "value": "", "type": "string" },
+    { "key": "eventId", "value": "", "type": "string" },
+    { "key": "categoryId", "value": "", "type": "string" },
+    { "key": "registrationId", "value": "", "type": "string" }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/api/auth/register", "host": ["{{baseUrl}}"], "path": ["api", "auth", "register"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Sara Ahmed\",\n  \"email\": \"sara@email.com\",\n  \"password\": \"Password123!\"\n}"
+            },
+            "description": "Register a new attendee. Password will be hashed with bcrypt. Duplicate email returns 400."
+          },
+          "response": [
+            {
+              "name": "201 Created",
+              "originalRequest": { "method": "POST", "url": "{{baseUrl}}/api/auth/register" },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "body": "{\n  \"status\": \"success\",\n  \"token\": \"eyJhbGciOiJIUzI1NiIs...\",\n  \"data\": { \"id\": \"665f1a...\", \"name\": \"Sara Ahmed\", \"email\": \"sara@email.com\", \"role\": \"attendee\" }\n}",
+              "header": []
+            }
+          ]
+        },
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/api/auth/login", "host": ["{{baseUrl}}"], "path": ["api", "auth", "login"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@eventpulse.com\",\n  \"password\": \"Admin123!\"\n}"
+            },
+            "description": "Login with email/password. Returns JWT containing userId and role. Wrong credentials return 401 with generic message."
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "code": 200,
+              "status": "OK",
+              "body": "{\n  \"status\": \"success\",\n  \"token\": \"eyJhbGciOiJIUzI1NiIs...\",\n  \"data\": { \"id\": \"665f1a...\", \"name\": \"Admin User\", \"email\": \"admin@eventpulse.com\", \"role\": \"admin\" }\n}",
+              "header": []
+            },
+            {
+              "name": "401 Unauthorized",
+              "code": 401,
+              "status": "Unauthorized",
+              "body": "{\n  \"status\": \"fail\",\n  \"message\": \"Invalid email or password\"\n}",
+              "header": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Events",
+      "item": [
+        {
+          "name": "Get All Events",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/events", "host": ["{{baseUrl}}"], "path": ["api", "events"] },
+            "description": "Public. List events with pagination metadata: total, page, limit, totalPages, data."
+          }
+        },
+        {
+          "name": "Get All Events - Filtered",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/events?city=Cairo&category={{categoryId}}&search=music&page=1&limit=10&sortBy=date&order=asc",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "events"],
+              "query": [
+                { "key": "city", "value": "Cairo" },
+                { "key": "category", "value": "{{categoryId}}" },
+                { "key": "search", "value": "music" },
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "10" },
+                { "key": "sortBy", "value": "date" },
+                { "key": "order", "value": "asc" }
+              ]
+            },
+            "description": "Filter by category, city, date range (startDate/endDate), search (case-insensitive title+description), pagination and sorting. All filters optional and combinable."
+          }
+        },
+        {
+          "name": "Get Single Event",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/events/{{eventId}}", "host": ["{{baseUrl}}"], "path": ["api", "events", "{{eventId}}"] },
+            "description": "Public. Returns event with populated category and organizer."
+          }
+        },
+        {
+          "name": "Create Event (Admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{adminToken}}" }
+            ],
+            "url": { "raw": "{{baseUrl}}/api/events", "host": ["{{baseUrl}}"], "path": ["api", "events"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Tech Conference 2024\",\n  \"description\": \"A premier tech conference covering AI and web development\",\n  \"category\": \"{{categoryId}}\",\n  \"date\": \"2024-12-20T10:00:00.000Z\",\n  \"city\": \"Cairo\",\n  \"venue\": \"Cairo International Conference Center\",\n  \"capacity\": 150\n}"
+            },
+            "description": "Admin only. Protected by requireAuth + requireRole('admin'). Attendee gets 403."
+          }
+        },
+        {
+          "name": "Update Event (Admin) - PATCH",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{adminToken}}" }
+            ],
+            "url": { "raw": "{{baseUrl}}/api/events/{{eventId}}", "host": ["{{baseUrl}}"], "path": ["api", "events", "{{eventId}}"] },
+            "body": { "mode": "raw", "raw": "{\n  \"title\": \"Updated Title\",\n  \"capacity\": 200\n}" },
+            "description": "Admin only. PATCH and PUT both supported. Param validation returns 422 if id invalid."
+          }
+        },
+        {
+          "name": "Delete Event (Admin)",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "url": { "raw": "{{baseUrl}}/api/events/{{eventId}}", "host": ["{{baseUrl}}"], "path": ["api", "events", "{{eventId}}"] },
+            "description": "Admin only."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Registrations",
+      "item": [
+        {
+          "name": "Register for Event",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": { "raw": "{{baseUrl}}/api/registrations", "host": ["{{baseUrl}}"], "path": ["api", "registrations"] },
+            "body": { "mode": "raw", "raw": "{\n  \"event\": \"{{eventId}}\"\n}" },
+            "description": "Protected by requireAuth. Checks: event exists (404), already registered (400), capacity full (400). Returns 201. Also available as POST /api/events/:id/register."
+          }
+        },
+        {
+          "name": "Register via Events Route",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/api/events/{{eventId}}/register", "host": ["{{baseUrl}}"], "path": ["api", "events", "{{eventId}}", "register"] },
+            "description": "Alias for POST /api/registrations"
+          }
+        },
+        {
+          "name": "My Registrations",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/api/registrations/my", "host": ["{{baseUrl}}"], "path": ["api", "registrations", "my"] },
+            "description": "Returns only current user's registrations, populated with event details."
+          }
+        },
+        {
+          "name": "Cancel Registration",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/api/registrations/{{registrationId}}", "host": ["{{baseUrl}}"], "path": ["api", "registrations", "{{registrationId}}"] },
+            "description": "Can only cancel own registration (403 if not owner, 404 if not found)."
+          }
+        },
+        {
+          "name": "Get Attendees (Event)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/events/{{eventId}}/attendees", "host": ["{{baseUrl}}"], "path": ["api", "events", "{{eventId}}", "attendees"] }
+          }
+        },
+        {
+          "name": "Get Status (Capacity)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/events/{{eventId}}/status", "host": ["{{baseUrl}}"], "path": ["api", "events", "{{eventId}}", "status"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Announcements",
+      "item": [
+        {
+          "name": "Send Announcement (Admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{adminToken}}" }
+            ],
+            "url": { "raw": "{{baseUrl}}/api/announcements", "host": ["{{baseUrl}}"], "path": ["api", "announcements"] },
+            "body": { "mode": "raw", "raw": "{\n  \"eventId\": \"{{eventId}}\",\n  \"text\": \"Welcome everyone! Session starts in 10 minutes.\"\n}" },
+            "description": "Admin only. Saves to Message collection and emits via Socket.io to event room: io.to(eventId).emit('announcement', message)"
+          }
+        },
+        {
+          "name": "Get Announcement History",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/announcements/{{eventId}}", "host": ["{{baseUrl}}"], "path": ["api", "announcements", "{{eventId}}"] },
+            "description": "Public. Returns messages for event, sorted oldest to newest, populated sender."
+          }
+        },
+        {
+          "name": "Get History via Events Route",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/events/{{eventId}}/announcements", "host": ["{{baseUrl}}"], "path": ["api", "events", "{{eventId}}", "announcements"] },
+            "description": "Alias for GET /api/announcements/:eventId"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Health & Docs",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/health", "host": ["{{baseUrl}}"], "path": ["health"] },
+            "description": "Returns status ok, environment, uptime, database status, timestamp. Use to verify deployment."
+          }
+        },
+        {
+          "name": "Swagger Docs",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api-docs", "host": ["{{baseUrl}}"], "path": ["api-docs"] },
+            "description": "Interactive Swagger UI. Documents Auth and Events at minimum."
+          }
+        },
+        {
+          "name": "Root",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/", "host": ["{{baseUrl}}"], "path": [""] }
+          }
+        }
+      ]
+    }
+  ]
+}

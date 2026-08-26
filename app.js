@@ -49,7 +49,10 @@ app.use((req, res, next) => {
 });
 
 // Health endpoint (must be before auth)
-app.get('/health', (req, res) => {
+app.get('/health', async (req, res) => {
+  if (mongoose.connection.readyState !== 1) {
+    try { await connectDB(); } catch (_) {}
+  }
   const dbStatus = mongoose.connection.readyState === 1 ? 'connected' : 'disconnected';
   res.status(200).json({
     status: 'ok',
@@ -62,7 +65,10 @@ app.get('/health', (req, res) => {
 });
 
 // Alternative health path for compatibility
-app.get('/api/health', (req, res) => {
+app.get('/api/health', async (req, res) => {
+  if (mongoose.connection.readyState !== 1) {
+    try { await connectDB(); } catch (_) {}
+  }
   const dbStatus = mongoose.connection.readyState === 1 ? 'connected' : 'disconnected';
   res.status(200).json({
     status: 'ok',

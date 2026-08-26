@@ -50,32 +50,42 @@ app.use((req, res, next) => {
 
 // Health endpoint (must be before auth)
 app.get('/health', async (req, res) => {
-  if (mongoose.connection.readyState !== 1) {
-    try { await connectDB(); } catch (_) {}
+  let dbStatus = mongoose.connection.readyState === 1 ? 'connected' : 'disconnected';
+  let dbError = null;
+  if (dbStatus !== 'connected') {
+    try { 
+      await connectDB(); 
+      dbStatus = mongoose.connection.readyState === 1 ? 'connected' : 'disconnected';
+    } catch (e) { dbError = e.message; }
   }
-  const dbStatus = mongoose.connection.readyState === 1 ? 'connected' : 'disconnected';
   res.status(200).json({
     status: 'ok',
     message: 'API is running',
     environment: process.env.NODE_ENV || 'development',
     uptime: `${Math.floor(process.uptime())}s`,
     database: dbStatus,
+    ...(dbError && { dbError }),
     timestamp: new Date().toISOString(),
   });
 });
 
 // Alternative health path for compatibility
 app.get('/api/health', async (req, res) => {
-  if (mongoose.connection.readyState !== 1) {
-    try { await connectDB(); } catch (_) {}
+  let dbStatus = mongoose.connection.readyState === 1 ? 'connected' : 'disconnected';
+  let dbError = null;
+  if (dbStatus !== 'connected') {
+    try { 
+      await connectDB(); 
+      dbStatus = mongoose.connection.readyState === 1 ? 'connected' : 'disconnected';
+    } catch (e) { dbError = e.message; }
   }
-  const dbStatus = mongoose.connection.readyState === 1 ? 'connected' : 'disconnected';
   res.status(200).json({
     status: 'ok',
     message: 'API is running',
     environment: process.env.NODE_ENV || 'development',
     uptime: `${Math.floor(process.uptime())}s`,
     database: dbStatus,
+    ...(dbError && { dbError }),
     timestamp: new Date().toISOString(),
   });
 });

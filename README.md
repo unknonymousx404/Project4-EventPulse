@@ -147,7 +147,7 @@ Run: `npm test`
 
 ## Swagger & Postman
 
-- Swagger UI: `http://localhost:3000/api-docs` (and `https://30902280102677-event-pulse.vercel.app/api-docs` in production). Documents Auth & Events at minimum (method, path, body, responses).
+- Swagger UI: `http://localhost:3000/api-docs` (and `https://project4-event-pulse.vercel.app/api-docs` in production - also available as `https://30902280102677-event-pulse.vercel.app/api-docs` after Vercel rename). Documents Auth & Events at minimum (method, path, body, responses).
 - Postman: `postman/EventPulse.postman_collection.json` — import into Postman. Contains folders Auth, Events, Registrations, Announcements, Health & Docs with sample bodies and responses. Variables: `baseUrl`, `token`, `adminToken`, `eventId`, etc.
 
 ## Deployment
@@ -163,7 +163,7 @@ Run: `npm test`
 
 1. `vercel.json` already configured: `{version:2, builds:[{src:app.js,use:@vercel/node}], routes:[{src:/(.*),dest:app.js}]}`
 2. Import GitHub repo in vercel.com → Add Env Vars: `MONGO_URI`, `JWT_SECRET`, `NODE_ENV=production` → Deploy
-3. Verify: `https://30902280102677-event-pulse.vercel.app/health` → `{status:"ok", database:"connected"}` and `/api-docs` loads.
+3. Verify: `https://project4-event-pulse.vercel.app/health` → `{status:"ok", database:"connected"}` and `/api-docs` loads. (After Vercel project rename, also `https://30902280102677-event-pulse.vercel.app/health`)
 
 ## Git Workflow
 
@@ -181,9 +181,10 @@ Conventional Commits: `feat:`, `fix:`, `docs:`, `test:`.
 
 ## Live Deployment Link
 
-- **API:** `https://30902280102677-event-pulse.vercel.app`
-- **Health:** `https://30902280102677-event-pulse.vercel.app/health`
-- **Docs:** `https://30902280102677-event-pulse.vercel.app/api-docs`
+- **API:** `https://project4-event-pulse.vercel.app`
+- **Health:** `https://project4-event-pulse.vercel.app/health`
+- **Docs:** `https://project4-event-pulse.vercel.app/api-docs`
+- **Alt (after rename):** `https://30902280102677-event-pulse.vercel.app` (same deployment)
 
 ## Project Name
 

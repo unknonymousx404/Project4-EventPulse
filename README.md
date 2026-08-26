@@ -31,7 +31,7 @@ app.js        -> Express app + Socket.io + Swagger + Health
 ```bash
 # 1. Clone
 git clone <your-repo-url>
-cd 12345-EventPulse
+cd 30902280102677-EventPulse
 
 # 2. Install
 npm install
@@ -147,7 +147,7 @@ Run: `npm test`
 
 ## Swagger & Postman
 
-- Swagger UI: `http://localhost:3000/api-docs` (and `https://project4-event-pulse.vercel.app/api-docs` in production). Documents Auth & Events at minimum (method, path, body, responses).
+- Swagger UI: `http://localhost:3000/api-docs` (and `https://30902280102677-event-pulse.vercel.app/api-docs` in production). Documents Auth & Events at minimum (method, path, body, responses).
 - Postman: `postman/EventPulse.postman_collection.json` — import into Postman. Contains folders Auth, Events, Registrations, Announcements, Health & Docs with sample bodies and responses. Variables: `baseUrl`, `token`, `adminToken`, `eventId`, etc.
 
 ## Deployment
@@ -163,7 +163,7 @@ Run: `npm test`
 
 1. `vercel.json` already configured: `{version:2, builds:[{src:app.js,use:@vercel/node}], routes:[{src:/(.*),dest:app.js}]}`
 2. Import GitHub repo in vercel.com → Add Env Vars: `MONGO_URI`, `JWT_SECRET`, `NODE_ENV=production` → Deploy
-3. Verify: `https://project4-event-pulse.vercel.app/health` → `{status:"ok", database:"connected"}` and `/api-docs` loads.
+3. Verify: `https://30902280102677-event-pulse.vercel.app/health` → `{status:"ok", database:"connected"}` and `/api-docs` loads.
 
 ## Git Workflow
 
@@ -181,13 +181,13 @@ Conventional Commits: `feat:`, `fix:`, `docs:`, `test:`.
 
 ## Live Deployment Link
 
-- **API:** `https://project4-event-pulse.vercel.app`
-- **Health:** `https://project4-event-pulse.vercel.app/health`
-- **Docs:** `https://project4-event-pulse.vercel.app/api-docs`
+- **API:** `https://30902280102677-event-pulse.vercel.app`
+- **Health:** `https://30902280102677-event-pulse.vercel.app/health`
+- **Docs:** `https://30902280102677-event-pulse.vercel.app/api-docs`
 
 ## Project Name
 
-Required format: `StudentID-EventPulse` (e.g., `12345-EventPulse`). Rename folder before submission.
+Required format: `StudentID-EventPulse` (e.g., `30902280102677-EventPulse`).
 
 ## License
 

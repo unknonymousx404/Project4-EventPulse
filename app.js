@@ -135,6 +135,9 @@ async function start() {
 // Only start if this file is run directly (not required for tests)
 if (require.main === module) {
   start();
+} else if (process.env.NODE_ENV !== 'test') {
+  // For Vercel serverless: connect DB on import (tests use mocked DB)
+  connectDB().catch((err) => console.error('Vercel DB connect error:', err.message));
 }
 
 module.exports = app;
